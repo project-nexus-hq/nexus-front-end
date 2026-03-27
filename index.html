@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Nexus | AI-Powered Cyber Training</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container">
+            <a href="#" class="logo">Project Nexus</a>
+            <nav>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Resources</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Your Mission-Ready Training Path Starts Here.</h1>
+                <p class="subtitle">Project Nexus uses AI to curate a personalized learning journey from existing DAF resources, tailored to your career goals.</p>
+            </div>
+        </section>
+
+        <section class="app-container">
+            <div class="container">
+                <!-- Input Form -->
+                <div class="input-form-card">
+                    <h2>1. Define Your Mission</h2>
+                    <form id="training-form">
+                        <div class="form-group">
+                            <label for="current-role">Your Current Cyber Role</label>
+                            <input type="text" id="current-role" placeholder="e.g., Network Technician, 1D7X1A" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="career-goal">Your Desired Goal or Skill</label>
+                            <input type="text" id="career-goal" placeholder="e.g., Become a Red Team Operator, Learn Python for Automation" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="generate-button">Generate My Path</button>
+                    </form>
+                </div>
+
+                <!-- Output Area -->
+                <div class="output-plan-card">
+                    <h2>2. Your Personalized Training Plan</h2>
+                    <div id="training-plan-container">
+                        <p class="placeholder-text">Your custom plan will appear here after you define your mission.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Project Nexus | Developed for the DAF Cyberspace Community</p>
+        </div>
+    </footer>
+
+    <script src="nexus.js"></script>
+</body>
+</html>
