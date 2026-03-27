@@ -48,7 +48,7 @@ async function handleFormSubmit() {
 // --- API Communication Function ---
 async function getAIResponse(prompt) {
     // IMPORTANT: Replace this with the real API URL from your Hugging Face Space
-    const API_URL = "https://nexus-back-end-3eom.onrender.com"; 
+    const API_URL = "https://nexus-backend.onrender.com/run/predict"; 
 
     const response = await fetch(API_URL, {
         method: "POST",
