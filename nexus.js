@@ -48,7 +48,7 @@ async function handleFormSubmit() {
 // --- API Communication Function ---
 async function getAIResponse(prompt) {
     // IMPORTANT: Replace this with the real API URL from your Hugging Face Space
-    const API_URL = "https://YourUsername-YourSpaceName.hf.space/run/predict"; 
+    const API_URL = "https://projectnexushq-nexus.hf.space"; 
 
     const response = await fetch(API_URL, {
         method: "POST",
