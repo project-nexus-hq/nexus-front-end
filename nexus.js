@@ -64,12 +64,10 @@ async function getAIResponse(prompt) {
 
     const result = await response.json();
     
-    // The AI's response is often a string of JSON. We need to parse it.
-    // In a real app, you'd add more robust error handling for this parse.
-    return JSON.parse(result.data[0]);
+    return response.json();
 }
 
-// --- UI Rendering Function ---
+// -- UI Rendering Function ---
 function renderTrainingPlan(planData) {
     // Clear the loading spinner
     planContainer.innerHTML = '';
