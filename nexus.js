@@ -54,7 +54,7 @@ async function getAIResponse(prompt) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            data: [prompt]
+            data: [prompt, null]
         })
     });
 
