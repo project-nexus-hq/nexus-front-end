@@ -47,7 +47,7 @@ async function handleFormSubmit() {
 
 // --- API Communication Function ---
 async function getAIResponse(prompt) {
-    const API_URL = "https://nexus-backend.onrender.com/run/predict"; 
+    const API_URL = "https://nexus-back-end-3eom.onrender.com/run/predict"; 
 
     const response = await fetch(API_URL, {
         method: "POST",
