@@ -47,24 +47,22 @@ async function handleFormSubmit() {
 
 // --- API Communication Function ---
 async function getAIResponse(prompt) {
-    // IMPORTANT: Replace this with the real API URL from your Hugging Face Space
     const API_URL = "https://nexus-backend.onrender.com/run/predict"; 
 
     const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            data: [prompt, null]
-        })
+        // FIX: Send { prompt } to match what Flask's data.get('prompt') expects
+        body: JSON.stringify({ prompt: prompt })
     });
 
     if (!response.ok) {
         throw new Error(`API Error: ${response.status}`);
     }
 
+    // FIX: Only call response.json() once — calling it twice consumes the stream
     const result = await response.json();
-    
-    return response.json();
+    return result;
 }
 
 // -- UI Rendering Function ---
