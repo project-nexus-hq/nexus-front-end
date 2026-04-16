@@ -5,41 +5,34 @@ const planContainer = document.getElementById('training-plan-container');
 
 // --- Event Listener ---
 trainingForm.addEventListener('submit', (event) => {
-    event.preventDefault(); // Prevent the form from submitting the traditional way
+    event.preventDefault();
     handleFormSubmit();
 });
 
 // --- Main Handler Function ---
 async function handleFormSubmit() {
-    const currentRole = document.getElementById('current-role').value;
-    const careerGoal = document.getElementById('career-goal').value;
+    const currentRole = document.getElementById('current-role').value.trim();
+    const careerGoal = document.getElementById('career-goal').value.trim();
 
     if (!currentRole || !careerGoal) {
         alert('Please fill out both fields.');
         return;
     }
 
-    // Show a loading state
     planContainer.innerHTML = '<div class="loading-spinner"></div>';
     generateButton.disabled = true;
     generateButton.textContent = 'Generating...';
 
-    // Construct the prompt for the AI
-    const userPrompt = `I am a cyber operator with the current role of '${currentRole}'. My goal is to '${careerGoal}'. Please generate a step-by-step training plan for me. The output should be a JSON array of objects, where each object has 'step_number', 'title', 'justification', and 'url'.`;
-    
-    try {
-        // Call the backend API
-        const aiResponse = await getAIResponse(userPrompt);
-        
-        // Render the response
-        renderTrainingPlan(aiResponse);
+    // Keep the prompt factual and direct — the system prompt in Flask handles persona/format
+    const userPrompt = `Current role: ${currentRole}\nCareer goal: ${careerGoal}`;
 
+    try {
+        const aiResponse = await getAIResponse(userPrompt);
+        renderTrainingPlan(aiResponse);
     } catch (error) {
-        // Handle errors
         planContainer.innerHTML = `<p class="placeholder-text">An error occurred while generating your plan. The AI service may be offline. Please try again later.</p>`;
         console.error("Error:", error);
     } finally {
-        // Reset the button state
         generateButton.disabled = false;
         generateButton.textContent = 'Generate My Path';
     }
@@ -47,12 +40,11 @@ async function handleFormSubmit() {
 
 // --- API Communication Function ---
 async function getAIResponse(prompt) {
-    const API_URL = "https://nexus-back-end-3eom.onrender.com/run/predict"; 
+    const API_URL = "https://nexus-back-end-3eom.onrender.com/run/predict";
 
     const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // FIX: Send { prompt } to match what Flask's data.get('prompt') expects
         body: JSON.stringify({ prompt: prompt })
     });
 
@@ -60,14 +52,11 @@ async function getAIResponse(prompt) {
         throw new Error(`API Error: ${response.status}`);
     }
 
-    // FIX: Only call response.json() once — calling it twice consumes the stream
-    const result = await response.json();
-    return result;
+    return await response.json();
 }
 
-// -- UI Rendering Function ---
+// --- UI Rendering Function ---
 function renderTrainingPlan(planData) {
-    // Clear the loading spinner
     planContainer.innerHTML = '';
 
     if (!planData || planData.length === 0) {
@@ -75,7 +64,6 @@ function renderTrainingPlan(planData) {
         return;
     }
 
-    // Create and append each step of the plan
     planData.forEach(step => {
         const stepElement = document.createElement('div');
         stepElement.classList.add('training-step');
@@ -90,12 +78,12 @@ function renderTrainingPlan(planData) {
         const link = document.createElement('a');
         link.href = step.url;
         link.textContent = 'Go to Resource';
-        link.target = '_blank'; // Open in a new tab
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer'; // Security best practice for target="_blank"
 
         stepElement.appendChild(title);
         stepElement.appendChild(justification);
         stepElement.appendChild(link);
-
         planContainer.appendChild(stepElement);
     });
 }
