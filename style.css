@@ -1,115 +1,151 @@
-from flask import Flask, jsonify, request, make_response
-from groq import Groq
-import json
-import os
-from flask_cors import CORS
+:root {
+    --primary-color: #007bff;
+    --background-color: #0a192f; /* A deep navy blue */
+    --surface-color: #172a45; /* A lighter, slightly purplish blue */
+    --text-color: #ccd6f6;
+    --text-muted-color: #8892b0;
+    --font-family: 'Poppins', sans-serif;
+    --success-color: #64ffda; /* A minty green for highlights */
+}
 
-app = Flask(__name__)
-CORS(app, origins=["https://project-nexus-hq.github.io"])
+body {
+    margin: 0;
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
 
-# Initialize Groq client
-client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
 
-SYSTEM_PROMPT = """You are a cyber career advisor with experience in both the Department of the Air Force (DAF) as well as private sector IT and cybersecurity companies. Your job is to generate personalized, realistic training plans for cyber operators. 
+/* --- General Components --- */
+.btn {
+    display: inline-block;
+    padding: 0.8rem 1.8rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    border: 1px solid var(--primary-color);
+}
 
-CRITICAL CONSTRAINTS & MILITARY ACCESS RULES:
-- OUT OF SCOPE BOUNDARY: If the user's current role or desired career goal is NOT related to cybersecurity, IT, networking, or military cyber operations, return a single JSON object explaining you only advise on cyber careers.
-- DOD FREE ACCESS: You must NEVER direct a military user to a commercial paywall if a DoD-funded alternative exists.
-- O'REILLY MEDIA: If recommending an O'Reilly book or course, direct them to use their DoD MWR Library account (log in with .mil email, select "I'm with MWR Libraries").
-- SKILLSOFT / PERCIPIO: Do not send users to Skillsoft.com. The USAF instance is Percipio. Direct them to search for the course on the AF e-Learning/Percipio portal.
-- URL BREADCRUMBS: Provide the main root URL of the platform, and provide exact search terms rather than guessing deep-link URLs which often break.
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #fff;
+}
 
-USER-PROVIDED CONSTRAINTS (THE SOURCE OF TRUTH):
-1. CLEARANCE: The user will provide their current clearance level. Do NOT suggest career goals or training that require a higher clearance unless you explicitly label it as "Requires Upgrade to [Level]."
-2. EXISTING CERTS: The user will list certifications they already possess. Do NOT include these as a step in the learning path.
-3. LOCAL SOPs: If unit-level context or an SOP is provided, prioritize the technical tasks and tools mentioned in that context over generic industry equivalents.
+.btn-primary:hover {
+    background-color: transparent;
+    color: var(--primary-color);
+}
 
-When you receive the user's mission profile, consider the following:
-- How does this goal map to DoD 8140/8570 baselines, AFSC CFETP upgrade training, or specific DAF work roles (e.g., DCO, OCO, DoDIN ops)?
-- What DOD-funded resources (DigitalU, AF Percipio, MWR, FedVTE, JKO) can provide this training at no cost?
-- If no DOD-funded resources are available, what reputable free platforms (TryHackMe, HackTheBox, Cisco NetAcad) apply?
-- Ensure the order of the learning path is logical and iterative.
+/* --- Navigation & Header --- */
+.navbar {
+    padding: 1.5rem 0;
+    background-color: rgba(10, 25, 47, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--surface-color);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+.navbar .container { display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 1.5rem; font-weight: 700; color: var(--success-color); text-decoration: none; }
+.navbar nav ul { list-style: none; display: flex; align-items: center; margin: 0; padding: 0; }
+.navbar nav li { margin-left: 2rem; }
+.navbar nav a { color: var(--text-color); text-decoration: none; font-weight: 400; }
 
-OUTPUT FORMAT:
-You must respond ONLY with a valid JSON object containing a single key called "learning_path". "learning_path" must be an array of objects. 
+/* --- Main Content --- */
+.hero {
+    padding-top: 150px;
+    text-align: center;
+    padding-bottom: 4rem;
+}
+.hero h1 { font-size: 3rem; color: var(--success-color); }
+.hero .subtitle { font-size: 1.2rem; max-width: 700px; margin: 1rem auto 0; }
 
-Each object in the array must have exactly these keys:
-- "step_number": integer starting at 1
-- "title": string, the name of the certification, course, or training resource
-- "justification": string, 2-3 sentences explaining why this step matters and specifically how it fulfills DoD 8140 compliance, CMF work roles, or enhances DAF cyber readiness.
-- "platform_url": string, a real and accurate ROOT URL to the vendor/platform (e.g., https://digitalu.af.mil).
-- "access_instructions": string, step-by-step instructions on how to access this resource for free using military credentials OR the exact search string to use on the platform.
+.app-container .container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
 
-Generate no more than 7 steps. Output only the JSON object with no markdown, no explanation, no preamble."""
+@media (min-width: 992px) {
+    .app-container .container { grid-template-columns: 1fr 2fr; }
+}
 
-@app.route('/run/predict', methods=['POST', 'OPTIONS'])
-def predict():
-    if request.method == 'OPTIONS':
-        response = make_response()
-        response.headers['Access-Control-Allow-Origin'] = 'https://project-nexus-hq.github.io'
-        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-        return response, 200
+.input-form-card, .output-plan-card {
+    background-color: var(--surface-color);
+    padding: 2.5rem;
+    border-radius: 5px;
+    border: 1px solid #1f3657;
+}
 
-    data = request.get_json()
-    
-    # Extract the new structured JSON payload from the frontend
-    mission_profile = data.get('missionProfile')
-    if not mission_profile:
-        # Fallback to legacy single prompt for backward compatibility during testing
-        user_prompt = data.get('prompt')
-        if not user_prompt:
-            return jsonify({"error": "No mission profile or prompt provided"}), 400
-    else:
-        # Construct a highly structured prompt from the JSON constraints
-        certs_held = ", ".join(mission_profile.get("currentCertifications", [])) or "None"
-        local_context = mission_profile.get("localContextSop", "None provided.")
-        
-        user_prompt = f"""
-        MISSION PROFILE OVERVIEW:
-        - Target Role / Goal: {mission_profile.get("strategicGoal", "Unspecified")} ({mission_profile.get("targetRoleType", "Unspecified")})
-        - Clearance Level: {mission_profile.get("clearanceLevel", "Unclassified")}
-        - Certifications Already Held: {certs_held}
-        - Unit Context / SOPs: {local_context}
-        
-        Please generate a learning path tailored strictly to these constraints.
-        """
+.form-group {
+    margin-bottom: 1.5rem;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #2a4162;
+    background-color: var(--background-color);
+    border-radius: 5px;
+    color: var(--text-color);
+    font-family: var(--font-family);
+}
 
-    try:
-        completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_prompt}
-            ],
-            temperature=0.7,
-            max_tokens=2048,
-            response_format={"type": "json_object"} 
-        )
-        
-        raw_text = completion.choices[0].message.content.strip()
-        
-        # Parse the JSON explicitly
-        parsed = json.loads(raw_text)
-        
-        # Extract the learning_path key
-        plan = parsed.get("learning_path", [])
-        
-        # Handle the Out of Scope edge case cleanly
-        if not plan:
-            return jsonify([{"step_number": 1, "title": "Out of Scope", "justification": "Query unrelated to cyber operations.", "platform_url": "", "access_instructions": ""}])
-        
-        return jsonify(plan)
+.output-plan-card h2 { margin-top: 0; }
+.placeholder-text { color: var(--text-muted-color); font-style: italic; }
 
-    except json.JSONDecodeError:
-        return jsonify({"error": "Failed to parse AI response into JSON format."}), 500
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+/* --- Generated Plan Styling --- */
+.training-step {
+    border-left: 3px solid var(--primary-color);
+    padding-left: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+.training-step::before {
+    content: attr(data-step);
+    position: absolute;
+    left: -18px;
+    top: -5px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--surface-color);
+    border: 3px solid var(--primary-color);
+    color: var(--success-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+}
+.training-step h3 { margin: 0 0 0.5rem; color: var(--success-color); }
+.training-step p { margin: 0 0 0.5rem; }
+.training-step a { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+.training-step a:hover { text-decoration: underline; }
 
-@app.route('/')
-def status():
-    return "Flask server is alive and running!"
+.loading-spinner {
+    border: 4px solid #f3f3f330;
+    border-top: 4px solid var(--success-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 2rem auto;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+/* --- Footer --- */
+.footer { text-align: center; padding: 3rem 0; color: var(--text-muted-color); font-size: 0.9rem; }
