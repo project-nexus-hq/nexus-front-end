@@ -1,151 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+
 :root {
-    --primary-color: #007bff;
-    --background-color: #0a192f; /* A deep navy blue */
-    --surface-color: #172a45; /* A lighter, slightly purplish blue */
-    --text-color: #ccd6f6;
-    --text-muted-color: #8892b0;
-    --font-family: 'Poppins', sans-serif;
-    --success-color: #64ffda; /* A minty green for highlights */
+    /* Deus Ex: Human Revolution Palette */
+    --primary-amber: #ffb000;
+    --dark-amber: #8a5a1e;
+    --bg-black: #080808;
+    --surface-bronze: #12100d;
+    --ui-border: #2a241b;
+    --text-gold: #e1b382;
+    --text-dim: #706552;
+    --font-header: 'Rajdhani', sans-serif;
+    --font-mono: 'Share Tech Mono', monospace;
+    --glow: 0 0 10px rgba(255, 176, 0, 0.3);
 }
 
 body {
     margin: 0;
-    font-family: var(--font-family);
-    background-color: var(--background-color);
-    color: var(--text-color);
-    line-height: 1.6;
+    font-family: var(--font-header);
+    background-color: var(--bg-black);
+    /* Fractal Geometric Background Pattern */
+    background-image: 
+        linear-gradient(rgba(8, 8, 8, 0.9), rgba(8, 8, 8, 0.9)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%23ffb000' fill-opacity='0.03'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40zm0-40h20v20H40V0zM0 40h20v20H0V40zm20 0h20v20H20V40zM40 20h20v20H40V20z'/%3E%3C/g%3E%3C/svg%3E");
+    color: var(--text-gold);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-.container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 2rem;
+/* --- Scanline Effect Overlay --- */
+body::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+    z-index: 9999;
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none;
+    opacity: 0.3;
 }
 
-/* --- General Components --- */
-.btn {
-    display: inline-block;
-    padding: 0.8rem 1.8rem;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
-    border: 1px solid var(--primary-color);
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    color: #fff;
-}
-
-.btn-primary:hover {
-    background-color: transparent;
-    color: var(--primary-color);
-}
-
-/* --- Navigation & Header --- */
+/* --- Navigation & HUD Header --- */
 .navbar {
-    padding: 1.5rem 0;
-    background-color: rgba(10, 25, 47, 0.85);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--surface-color);
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
+    padding: 1rem 0;
+    background-color: var(--surface-bronze);
+    border-bottom: 2px solid var(--primary-amber);
+    box-shadow: var(--glow);
 }
-.navbar .container { display: flex; justify-content: space-between; align-items: center; }
-.logo { font-size: 1.5rem; font-weight: 700; color: var(--success-color); text-decoration: none; }
-.navbar nav ul { list-style: none; display: flex; align-items: center; margin: 0; padding: 0; }
-.navbar nav li { margin-left: 2rem; }
-.navbar nav a { color: var(--text-color); text-decoration: none; font-weight: 400; }
 
-/* --- Main Content --- */
-.hero {
-    padding-top: 150px;
-    text-align: center;
-    padding-bottom: 4rem;
+.logo { 
+    font-size: 1.8rem; 
+    font-weight: 700; 
+    color: var(--primary-amber); 
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: var(--glow);
 }
-.hero h1 { font-size: 3rem; color: var(--success-color); }
-.hero .subtitle { font-size: 1.2rem; max-width: 700px; margin: 1rem auto 0; }
 
-.app-container .container {
+/* --- Layout Grid --- */
+.app-layout {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1rem;
+    flex: 1;
+    padding: 1rem;
+    overflow: hidden;
 }
 
 @media (min-width: 992px) {
-    .app-container .container { grid-template-columns: 1fr 2fr; }
+    .app-layout { grid-template-columns: 400px 1fr; }
 }
 
-.input-form-card, .output-plan-card {
-    background-color: var(--surface-color);
-    padding: 2.5rem;
-    border-radius: 5px;
-    border: 1px solid #1f3657;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-}
-.form-group input {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #2a4162;
-    background-color: var(--background-color);
-    border-radius: 5px;
-    color: var(--text-color);
-    font-family: var(--font-family);
-}
-
-.output-plan-card h2 { margin-top: 0; }
-.placeholder-text { color: var(--text-muted-color); font-style: italic; }
-
-/* --- Generated Plan Styling --- */
-.training-step {
-    border-left: 3px solid var(--primary-color);
-    padding-left: 1.5rem;
-    margin-bottom: 2rem;
+/* --- CHAT INTERFACE (The Comm-Link) --- */
+.chat-container {
+    background-color: rgba(18, 16, 13, 0.9);
+    border: 1px solid var(--dark-amber);
+    display: flex;
+    flex-direction: column;
     position: relative;
 }
-.training-step::before {
-    content: attr(data-step);
+
+/* Angled corners for that Deus Ex look */
+.chat-container::after {
+    content: '';
     position: absolute;
-    left: -18px;
-    top: -5px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background-color: var(--surface-color);
-    border: 3px solid var(--primary-color);
-    color: var(--success-color);
+    top: 0; right: 0;
+    border-style: solid;
+    border-width: 0 20px 20px 0;
+    border-color: transparent var(--primary-amber) transparent transparent;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    font-family: var(--font-mono);
+}
+
+.message.assistant {
+    border-left: 2px solid var(--primary-amber);
+    background: rgba(138, 90, 30, 0.05);
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.message.user {
+    border-right: 2px solid var(--text-gold);
+    text-align: right;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    color: var(--primary-amber);
+}
+
+.chat-input-area {
+    background: var(--surface-bronze);
+    border-top: 1px solid var(--dark-amber);
+    padding: 0.5rem;
     display: flex;
-    justify-content: center;
-    align-items: center;
+}
+
+.chat-input-area input {
+    background: transparent;
+    border: none;
+    color: var(--primary-amber);
+    padding: 0.8rem;
+    flex: 1;
+    font-family: var(--font-mono);
+}
+
+.chat-input-area input:focus { outline: none; }
+
+.btn-send {
+    background: var(--primary-amber);
+    color: black;
+    border: none;
     font-weight: 700;
+    padding: 0 1.5rem;
+    cursor: pointer;
+    text-transform: uppercase;
 }
-.training-step h3 { margin: 0 0 0.5rem; color: var(--success-color); }
-.training-step p { margin: 0 0 0.5rem; }
-.training-step a { color: var(--primary-color); text-decoration: none; font-weight: 600; }
-.training-step a:hover { text-decoration: underline; }
 
-.loading-spinner {
-    border: 4px solid #f3f3f330;
-    border-top: 4px solid var(--success-color);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 2rem auto;
+/* --- TACTICAL TREE VIEW --- */
+.roadmap-container {
+    background-color: rgba(10, 10, 10, 0.8);
+    border: 1px solid var(--ui-border);
+    padding: 2rem;
+    overflow-y: auto;
 }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* --- Footer --- */
-.footer { text-align: center; padding: 3rem 0; color: var(--text-muted-color); font-size: 0.9rem; }
+.tree-spine {
+    position: relative;
+    padding-left: 3rem;
+}
+
+.tree-spine::before {
+    content: '';
+    position: absolute;
+    left: 10px; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--primary-amber), transparent);
+}
+
+.tree-node {
+    position: relative;
+    margin-bottom: 2.5rem;
+}
+
+/* Diamond-shaped node markers */
+.tree-node::before {
+    content: '';
+    position: absolute;
+    left: -2.85rem;
+    top: 10px;
+    width: 12px;
+    height: 12px;
+    background-color: var(--primary-amber);
+    transform: rotate(45deg);
+    box-shadow: var(--glow);
+}
+
+.node-content {
+    background: rgba(42, 36, 27, 0.3);
+    border: 1px solid var(--ui-border);
+    padding: 1.5rem;
+    clip-path: polygon(0 0, 98% 0, 100% 20%, 100% 100%, 2% 100%, 0 80%);
+}
+
+.node-content:hover {
+    background: rgba(138, 90, 30, 0.1);
+    border-color: var(--primary-amber);
+}
+
+.node-content h3 {
+    color: var(--primary-amber);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 0.5rem 0;
+}
+
+.node-meta {
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--dark-amber);
+    border-top: 1px solid var(--ui-border);
+    padding-top: 0.5rem;
+    text-transform: uppercase;
+}
+
+/* Custom Scrollbar for the Augmented Feel */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-black); }
+::-webkit-scrollbar-thumb { background: var(--primary-amber); }
