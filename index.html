@@ -4,70 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Nexus | Tactical AI Career Advisor</title>
-    <!-- Pointing to your original CSS file -->
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- DASHBOARD SPACING & LAYOUT FIXES --- */
+        /* --- DASHBOARD & TAB STYLING --- */
         :root {
-            --dashboard-width: 1400px; /* Expands the site width */
+            --dashboard-width: 1400px;
         }
 
-        /* Override the original container to be wider for the app view */
         .app-container .container {
             max-width: var(--dashboard-width) !important;
             width: 95% !important;
             margin: 0 auto;
         }
 
-        /* Create the side-by-side layout */
+        /* Tab Navigation Bar */
+        .tab-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #1f3657;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid #1f3657;
+            color: var(--text-muted-color);
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            font-family: var(--font-family);
+            font-weight: 600;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--surface-color);
+            border-color: var(--primary-color);
+            color: var(--success-color);
+            border-bottom: 2px solid var(--success-color);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+        }
+
+        /* Tab Content Handling */
+        .tab-content {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Grid (Inside the Chat Tab) */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 2rem;
-            margin-top: 2rem;
             align-items: start;
         }
 
         @media (min-width: 1100px) {
             .dashboard-grid {
-                /* 40% width for Chat, 60% width for the Roadmap */
                 grid-template-columns: 4fr 6fr !important; 
             }
         }
 
-        /* Make both cards uniform in height */
+        /* Sizing Fixes */
         .input-form-card, .output-plan-card {
-            height: auto;
-            min-height: 700px;
+            min-height: 650px;
             display: flex;
             flex-direction: column;
         }
 
-        /* Let the chat window expand to fill empty space */
         #chat-window {
-            flex-grow: 1; 
-            min-height: 400px;
+            flex-grow: 1;
+            min-height: 450px;
         }
 
-        /* Roadmap Spacing */
-        #roadmap-container {
-            margin-top: 1rem;
-        }
-
-        /* Enhanced styling for the training nodes */
         .training-step {
             background: rgba(255, 255, 255, 0.03);
             padding: 1.5rem;
             border-radius: 8px;
             margin-bottom: 2rem;
-            transition: transform 0.2s ease;
-        }
-
-        .training-step:hover {
-            transform: translateX(5px);
-            background: rgba(255, 255, 255, 0.05);
         }
     </style>
 </head>
@@ -76,24 +106,29 @@
     <header class="navbar">
         <div class="container">
             <a href="#" class="logo">PROJECT NEXUS</a>
-            <!-- GenAI.mil Nav Removed -->
         </div>
     </header>
 
-    <section class="hero" style="padding-top: 120px; padding-bottom: 2rem;">
+    <section class="hero" style="padding-top: 120px; padding-bottom: 1rem;">
         <div class="container">
-            <h1>Tactical Career Dashboard</h1>
-            <p class="subtitle">Set your mission parameters and engage Nexus for iterative career planning.</p>
+            <h1>Mission Control</h1>
         </div>
     </section>
 
     <div class="app-container">
         <div class="container">
-            <div class="dashboard-grid">
-                
-                <!-- LEFT COLUMN: MISSION PROFILE & CHAT -->
-                <div class="input-form-card">
-                    <h2 style="color: var(--success-color); border-bottom: 1px solid #1f3657; padding-bottom: 10px; margin-bottom: 1.5rem;">🛡️ Mission Profile</h2>
+            
+            <!-- TACTICAL TAB NAVIGATION -->
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="openTab(event, 'profile-tab')">🛡️ Step 1: Mission Profile</button>
+                <button class="tab-btn" onclick="openTab(event, 'chat-tab')">💬 Step 2: Tactical Dashboard</button>
+            </div>
+
+            <!-- TAB 1: MISSION PROFILE (FORM) -->
+            <div id="profile-tab" class="tab-content active">
+                <div class="input-form-card" style="max-width: 800px; margin: 0 auto; min-height: auto;">
+                    <h2 style="color: var(--success-color); margin-bottom: 1.5rem;">Configure Your Personnel Metrics</h2>
+                    <p style="margin-bottom: 2rem; color: var(--text-muted-color);">These parameters act as "Hard Constraints" for the AI to prevent hallucinated requirements.</p>
                     
                     <div class="form-group">
                         <label>Clearance Level</label>
@@ -104,33 +139,50 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Existing Certifications</label>
+                        <label>Existing Certifications (Comma Separated)</label>
                         <input type="text" id="certs" placeholder="e.g. Sec+, A+, Network+" value="Sec+">
                     </div>
 
-                    <h2 style="color: var(--success-color); border-bottom: 1px solid #1f3657; padding-bottom: 10px; margin-top: 1rem; margin-bottom: 1.5rem;">💬 Nexus Interface</h2>
-                    
-                    <div id="chat-window" style="overflow-y: auto; background: var(--background-color); padding: 1.2rem; border-radius: 5px; border: 1px solid #1f3657; margin-bottom: 1rem; font-size: 0.95rem; text-align: left;">
-                        <div style="color: var(--text-muted-color); font-style: italic;">Uplink Established. Provide your career objective or ask for a training plan modification.</div>
+                    <div class="form-group">
+                        <label>Local Unit Context / Master Training Plan (Optional)</label>
+                        <textarea id="local-context" style="width: 100%; padding: 0.8rem; background: var(--background-color); color: white; border: 1px solid #2a4162; border-radius: 5px; font-family: var(--font-family); min-height: 100px;" placeholder="Paste unit-specific tasks or SOP details here..."></textarea>
                     </div>
 
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <input type="text" id="user-input" placeholder="Type message (e.g. 'I want to be a Cyber Defense Analyst')">
-                        <button class="btn btn-primary" id="send-btn" style="width: 100%; margin-top: 1rem; letter-spacing: 1px;">EXECUTE COMMAND</button>
-                    </div>
+                    <button class="btn btn-primary" onclick="document.querySelector('[onclick*=\'chat-tab\']').click()" style="width: 100%; margin-top: 1rem;">Save Profile & Proceed to Dashboard</button>
                 </div>
+            </div>
 
-                <!-- RIGHT COLUMN: TACTICAL ROADMAP -->
-                <div class="output-plan-card" style="text-align: left;">
-                    <h2 style="color: var(--success-color); border-bottom: 1px solid #1f3657; padding-bottom: 10px; margin-bottom: 2rem;">📍 Training Roadmap</h2>
-                    <div id="roadmap-container">
-                        <div style="text-align: center; margin-top: 4rem;">
-                            <p class="placeholder-text">Input parameters on the left to generate tactical guidance.</p>
+            <!-- TAB 2: CHAT & ROADMAP (DASHBOARD) -->
+            <div id="chat-tab" class="tab-content">
+                <div class="dashboard-grid">
+                    
+                    <!-- LEFT: Chat Interface -->
+                    <div class="input-form-card">
+                        <h2 style="color: var(--success-color); border-bottom: 1px solid #1f3657; padding-bottom: 10px; margin-bottom: 1.5rem;">Tactical Interface</h2>
+                        
+                        <div id="chat-window" style="overflow-y: auto; background: var(--background-color); padding: 1.2rem; border-radius: 5px; border: 1px solid #1f3657; margin-bottom: 1rem; font-size: 0.95rem; text-align: left;">
+                            <div style="color: var(--text-muted-color); font-style: italic;">Uplink Established. Profile data has been synced. How can I assist your career strategy?</div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <input type="text" id="user-input" placeholder="e.g. 'I want to be a Tier 2 Analyst'">
+                            <button class="btn btn-primary" id="send-btn" style="width: 100%; margin-top: 1rem; letter-spacing: 1px;">EXECUTE COMMAND</button>
                         </div>
                     </div>
-                </div>
 
+                    <!-- RIGHT: Training Roadmap -->
+                    <div class="output-plan-card" style="text-align: left;">
+                        <h2 style="color: var(--success-color); border-bottom: 1px solid #1f3657; padding-bottom: 10px; margin-bottom: 2rem;">Iterative Roadmap</h2>
+                        <div id="roadmap-container">
+                            <div style="text-align: center; margin-top: 4rem;">
+                                <p class="placeholder-text">Chat with Nexus to generate or modify your path.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
+
         </div>
     </div>
 
@@ -143,6 +195,21 @@
     <script>
         let chatHistory = [];
 
+        // --- TAB NAVIGATION LOGIC ---
+        function openTab(evt, tabName) {
+            const contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) {
+                contents[i].classList.remove("active");
+            }
+            const buttons = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // --- CHAT & BACKEND LOGIC ---
         async function runMission() {
             const userInput = document.getElementById('user-input');
             const chatWindow = document.getElementById('chat-window');
@@ -151,25 +218,24 @@
 
             if (!userInput.value.trim()) return;
 
-            // 1. Gather profile constraints
+            // Gather profile constraints (Reads from the other tab seamlessly)
             const profile = {
                 clearanceLevel: document.getElementById('clearance').value,
-                currentCertifications: document.getElementById('certs').value.split(',').map(s => s.trim())
+                currentCertifications: document.getElementById('certs').value.split(',').map(s => s.trim()),
+                localContextSop: document.getElementById('local-context').value
             };
 
-            // 2. Update Chat UI with User message
             const userText = userInput.value;
             chatHistory.push({ role: 'user', content: userText });
             chatWindow.innerHTML += `<div style="margin-bottom: 15px; color: var(--success-color); font-weight: 600;">> USER: ${userText}</div>`;
             userInput.value = '';
             chatWindow.scrollTop = chatWindow.scrollHeight;
 
-            // 3. UI Loading State
             sendBtn.innerText = "UPLINK ACTIVE...";
             sendBtn.disabled = true;
 
             try {
-                // IMPORTANT: Replace this URL with your actual Render URL!
+                // REPLACE WITH YOUR LIVE RENDER URL
                 const response = await fetch('https://YOUR-RENDER-URL.onrender.com/run/predict', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -181,13 +247,11 @@
 
                 const data = await response.json();
 
-                // 4. Update Chat UI with Assistant message
                 if (data.assistant_message) {
                     chatHistory.push({ role: 'assistant', content: data.assistant_message });
                     chatWindow.innerHTML += `<div style="margin-bottom: 15px; border-left: 3px solid var(--primary-color); padding-left: 12px; line-height: 1.4;"><strong>> NEXUS:</strong> ${data.assistant_message}</div>`;
                 }
 
-                // 5. Build Roadmap Tree
                 if (data.learning_path && data.learning_path.length > 0) {
                     let roadmapHtml = '';
                     data.learning_path.forEach(step => {
@@ -198,7 +262,7 @@
                                 <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 4px; border-left: 3px solid var(--success-color); font-size: 0.85rem;">
                                     <strong style="color: var(--success-color); text-transform: uppercase;">Access Instructions:</strong><br>${step.access_instructions}
                                 </div>
-                                ${step.platform_url ? `<a href="${step.platform_url}" target="_blank" style="display: inline-block; margin-top: 15px; font-weight: bold;">Launch Platform ↗</a>` : ''}
+                                ${step.platform_url ? `<a href="${step.platform_url}" target="_blank" style="display: inline-block; margin-top: 15px; font-weight: bold;">Launch Resource ↗</a>` : ''}
                             </div>
                         `;
                     });
@@ -208,8 +272,7 @@
                 chatWindow.scrollTop = chatWindow.scrollHeight;
 
             } catch (error) {
-                console.error(error);
-                chatWindow.innerHTML += `<div style="color: #ff6464; margin-top: 10px;"><strong>! ERROR:</strong> Tactical Uplink Failed. Verify backend connection.</div>`;
+                chatWindow.innerHTML += `<div style="color: #ff6464; margin-top: 10px;"><strong>! ERROR:</strong> Uplink Failure. Check backend logs.</div>`;
             } finally {
                 sendBtn.innerText = "EXECUTE COMMAND";
                 sendBtn.disabled = false;
