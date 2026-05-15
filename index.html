@@ -4,68 +4,172 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Nexus | AI-Powered Cyber Training</title>
+    <!-- Pointing back to your original style.css file -->
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <header class="navbar">
         <div class="container">
-            <a href="#" class="logo">Project Nexus</a>
+            <a href="#" class="logo">PROJECT NEXUS</a>
             <nav>
                 <ul>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Resources</a></li>
+                    <li><a href="https://www.genai.mil" target="_blank">GenAI.mil</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <main>
-        <section class="hero">
-            <div class="container">
-                <h1>Your Mission-Ready Training Path Starts Here.</h1>
-                <p class="subtitle">Project Nexus uses AI to curate a personalized learning journey from existing DAF resources, tailored to your career goals.</p>
-            </div>
-        </section>
+    <section class="hero">
+        <div class="container">
+            <h1>Mission Career Profiler</h1>
+            <p class="subtitle">Structured guidance for DAF Cyber Operators. Set your profile, then chat to refine your roadmap.</p>
+        </div>
+    </section>
 
-        <section class="app-container">
-            <div class="container">
-                <!-- Input Form -->
+    <div class="app-container">
+        <div class="container">
+            <!-- LAYOUT GRID -->
+            <div style="display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 2rem;" class="responsive-grid">
+                
+                <style>
+                    @media (min-width: 992px) {
+                        .responsive-grid { grid-template-columns: 1fr 1.5fr !important; }
+                    }
+                </style>
+
+                <!-- LEFT COLUMN: MISSION PROFILE & CHAT -->
                 <div class="input-form-card">
-                    <h2>1. Define Your Mission</h2>
-                    <form id="training-form">
-                        <div class="form-group">
-                            <label for="current-role">Your Current Cyber Role</label>
-                            <input type="text" id="current-role" placeholder="e.g., Network Technician, 1D7X1A" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="career-goal">Your Desired Goal or Skill</label>
-                            <input type="text" id="career-goal" placeholder="e.g., Become a Red Team Operator, Learn Python for Automation" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary" id="generate-button">Generate My Path</button>
-                    </form>
-                </div>
+                    <h2 style="color: var(--success-color); margin-bottom: 1.5rem;">🛡️ 1. Mission Profile</h2>
+                    
+                    <div class="form-group">
+                        <label>Clearance Level</label>
+                        <select id="clearance" style="width: 100%; padding: 0.8rem; background: var(--background-color); color: white; border: 1px solid #2a4162; border-radius: 5px; font-family: var(--font-family);">
+                            <option value="Secret">Secret</option>
+                            <option value="TS/SCI">TS/SCI</option>
+                        </select>
+                    </div>
 
-                <!-- Output Area -->
-                <div class="output-plan-card">
-                    <h2>2. Your Personalized Training Plan</h2>
-                    <div id="training-plan-container">
-                        <p class="placeholder-text">Your custom plan will appear here after you define your mission.</p>
+                    <div class="form-group">
+                        <label>Certifications Held</label>
+                        <input type="text" id="certs" placeholder="e.g. Sec+, CCNA, CEH" value="Sec+">
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #1f3657; margin: 2rem 0;">
+
+                    <h2 style="color: var(--success-color); margin-bottom: 1.5rem;">💬 2. Tactical Chat</h2>
+                    
+                    <!-- Chat History Window -->
+                    <div id="chat-window" style="height: 300px; overflow-y: auto; background: var(--background-color); padding: 1rem; border-radius: 5px; border: 1px solid #1f3657; margin-bottom: 1rem; font-size: 0.9rem; text-align: left;">
+                        <div style="color: var(--text-muted-color); font-style: italic;">Nexus Advisor Initialized. How can I assist your career progression today?</div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" id="user-input" placeholder="Type your goal (e.g., 'I want to be a DCO operator')">
+                        <button class="btn btn-primary" id="send-btn" style="width: 100%; margin-top: 1rem;">Execute Command</button>
                     </div>
                 </div>
+
+                <!-- RIGHT COLUMN: TACTICAL ROADMAP -->
+                <div class="output-plan-card" style="text-align: left;">
+                    <h2 style="color: var(--success-color); margin-bottom: 2rem;">📍 Tactical Roadmap</h2>
+                    <div id="roadmap-container">
+                        <p class="placeholder-text">Complete your profile and send a message to generate your training path.</p>
+                    </div>
+                </div>
+
             </div>
-        </section>
-    </main>
+        </div>
+    </div>
 
     <footer class="footer">
         <div class="container">
-            <p>Project Nexus | Developed for the DAF Cyberspace Community</p>
+            <p>&copy; 2024 Project Nexus | Secure AI Mission Support</p>
         </div>
     </footer>
 
-    <script src="nexus.js"></script>
+    <script>
+        let chatHistory = [];
+
+        async function runMission() {
+            const userInput = document.getElementById('user-input');
+            const chatWindow = document.getElementById('chat-window');
+            const roadmapContainer = document.getElementById('roadmap-container');
+            const sendBtn = document.getElementById('send-btn');
+
+            if (!userInput.value.trim()) return;
+
+            // 1. Gather constraints from the UI
+            const profile = {
+                clearanceLevel: document.getElementById('clearance').value,
+                currentCertifications: document.getElementById('certs').value.split(',').map(s => s.trim())
+            };
+
+            // 2. Update Chat UI
+            const userText = userInput.value;
+            chatHistory.push({ role: 'user', content: userText });
+            chatWindow.innerHTML += `<div style="margin-bottom: 12px; color: var(--success-color);"><strong>> YOU:</strong> ${userText}</div>`;
+            userInput.value = '';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            // 3. UI Loading State
+            sendBtn.innerText = "COMMUNICATIONS ACTIVE...";
+            sendBtn.disabled = true;
+
+            try {
+                // IMPORTANT: Replace the URL below with your actual Render URL
+                // Example: https://project-nexus-backend.onrender.com/run/predict
+                const response = await fetch('https://project-nexus-hq.github.io/nexus-front-end/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chatHistory: chatHistory,
+                        missionProfile: profile
+                    })
+                });
+
+                const data = await response.json();
+
+                // 4. Handle Conversation
+                if (data.assistant_message) {
+                    chatHistory.push({ role: 'assistant', content: data.assistant_message });
+                    chatWindow.innerHTML += `<div style="margin-bottom: 12px; border-left: 2px solid var(--primary-color); padding-left: 10px;"><strong>> NEXUS:</strong> ${data.assistant_message}</div>`;
+                }
+
+                // 5. Update Roadmap Tree
+                if (data.learning_path && data.learning_path.length > 0) {
+                    let roadmapHtml = '';
+                    data.learning_path.forEach(step => {
+                        roadmapHtml += `
+                            <div class="training-step" data-step="${step.step_number}">
+                                <h3>${step.title}</h3>
+                                <p>${step.justification}</p>
+                                <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 4px; margin: 10px 0; font-size: 0.85rem; border-left: 2px solid var(--success-color);">
+                                    <strong style="color: var(--success-color);">ACCESS INSTRUCTIONS:</strong><br>${step.access_instructions}
+                                </div>
+                                ${step.platform_url ? `<a href="${step.platform_url}" target="_blank" style="font-size: 0.9rem;">Launch Resource ↗</a>` : ''}
+                            </div>
+                        `;
+                    });
+                    roadmapContainer.innerHTML = roadmapHtml;
+                }
+
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            } catch (error) {
+                console.error(error);
+                chatWindow.innerHTML += `<div style="color: #ff6464; margin-top: 10px;"><strong>! ERROR:</strong> Uplink to Command Server failed. Check console for details.</div>`;
+            } finally {
+                sendBtn.innerText = "Execute Command";
+                sendBtn.disabled = false;
+            }
+        }
+
+        document.getElementById('send-btn').addEventListener('click', runMission);
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') runMission();
+        });
+    </script>
 </body>
 </html>
