@@ -131,4 +131,137 @@
 
                     <div class="form-group">
                         <label>Local Unit Context (Optional)</label>
-            
+                        <textarea id="local-context" style="width: 100%; padding: 0.8rem; background: var(--background-color); color: white; border: 1px solid #2a4162; border-radius: 5px; min-height: 100px;" placeholder="Paste specific unit tasks or MTP details here..."></textarea>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="switchTab('chat-tab')" style="width: 100%; margin-top: 1rem;">Save Profile & Proceed</button>
+                </div>
+            </div>
+
+            <!-- TAB 2: TACTICAL DASHBOARD -->
+            <div id="chat-tab" class="tab-content">
+                <div class="dashboard-grid">
+                    
+                    <div class="input-form-card">
+                        <h2 style="color: var(--success-color); border-bottom: 1px solid #1f3657; padding-bottom: 10px; margin-bottom: 1.5rem;">Tactical Interface</h2>
+                        <div id="chat-window" style="overflow-y: auto; background: var(--background-color); padding: 1.2rem; border-radius: 5px; border: 1px solid #1f3657; margin-bottom: 1rem; font-size: 0.95rem; text-align: left;">
+                            <div style="color: var(--text-muted-color); font-style: italic;">Uplink Established. How can I assist your career strategy today?</div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <input type="text" id="user-input" placeholder="e.g. 'Generate a path for DCO Operator'">
+                            <button class="btn btn-primary" id="send-btn" style="width: 100%; margin-top: 1rem;">EXECUTE COMMAND</button>
+                        </div>
+                    </div>
+
+                    <div class="output-plan-card" style="text-align: left;">
+                        <h2 style="color: var(--success-color); border-bottom: 1px solid #1f3657; padding-bottom: 10px; margin-bottom: 2rem;">Iterative Roadmap</h2>
+                        <div id="roadmap-container">
+                            <p class="placeholder-text">Engage Nexus to visualize your training path.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Project Nexus | Secure Mission Readiness</p>
+        </div>
+    </footer>
+
+    <script>
+        let chatHistory = [];
+
+        function openTab(evt, tabName) {
+            const contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
+            const buttons = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove("active");
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function switchTab(tabId) {
+            const targetBtn = document.querySelector(`[onclick*='${tabId}']`);
+            if (targetBtn) targetBtn.click();
+        }
+
+        async function runMission() {
+            const userInput = document.getElementById('user-input');
+            const chatWindow = document.getElementById('chat-window');
+            const roadmapContainer = document.getElementById('roadmap-container');
+            const sendBtn = document.getElementById('send-btn');
+
+            if (!userInput.value.trim()) return;
+
+            const profile = {
+                clearanceLevel: document.getElementById('clearance').value,
+                currentCertifications: document.getElementById('certs').value.split(',').map(s => s.trim()),
+                localContextSop: document.getElementById('local-context').value
+            };
+
+            const userText = userInput.value;
+            chatHistory.push({ role: 'user', content: userText });
+            chatWindow.innerHTML += `<div style="margin-bottom: 15px; color: var(--success-color); font-weight: 600;">> USER: ${userText}</div>`;
+            userInput.value = '';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            sendBtn.innerText = "UPLINK ACTIVE...";
+            sendBtn.disabled = true;
+
+            try {
+                // REMINDER: YOU MUST REPLACE THIS WITH YOUR RENDER URL
+                const targetUrl = 'https://YOUR-RENDER-URL.onrender.com/run/predict';
+                
+                const response = await fetch(targetUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chatHistory: chatHistory, missionProfile: profile })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.assistant_message) {
+                    chatHistory.push({ role: 'assistant', content: data.assistant_message });
+                    chatWindow.innerHTML += `<div style="margin-bottom: 15px; border-left: 3px solid var(--primary-color); padding-left: 12px; line-height: 1.4;"><strong>> NEXUS:</strong> ${data.assistant_message}</div>`;
+                }
+
+                if (data.learning_path && data.learning_path.length > 0) {
+                    let roadmapHtml = '';
+                    data.learning_path.forEach(step => {
+                        roadmapHtml += `<div class="training-step" data-step="${step.step_number}"><h3>${step.title}</h3><p>${step.justification}</p><div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 4px; border-left: 3px solid var(--success-color); font-size: 0.85rem;"><strong style="color: var(--success-color);">Access:</strong> ${step.access_instructions}</div>${step.platform_url ? `<a href="${step.platform_url}" target="_blank" style="margin-top: 15px; display: inline-block;">Launch ↗</a>` : ''}</div>`;
+                    });
+                    roadmapContainer.innerHTML = roadmapHtml;
+                }
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+                
+            } catch (error) {
+                console.error("Full Error Object:", error);
+                
+                // Detailed Diagnostic Error UI
+                let errorType = error.name === 'TypeError' ? "Network/CORS/Timeout Error" : "Server Error";
+                chatWindow.innerHTML += `
+                    <div style="color: #ff6464; margin-top: 15px; border: 1px solid #ff6464; padding: 12px; border-radius: 5px; background: rgba(255, 100, 100, 0.05);">
+                        <strong>! UPLINK FAILURE:</strong> ${errorType}<br>
+                        <span style="font-size: 0.85rem; display: block; margin-top: 5px;">Details: ${error.message}</span>
+                        <span style="font-size: 0.8rem; color: #8892b0; display: block; margin-top: 8px;">Diagnostic Check: Ensure your Render URL in index.html is correct and the server is awake.</span>
+                    </div>`;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            } finally {
+                sendBtn.innerText = "EXECUTE COMMAND";
+                sendBtn.disabled = false;
+            }
+        }
+
+        document.getElementById('send-btn').addEventListener('click', runMission);
+        document.getElementById('user-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') runMission(); });
+    </script>
+</body>
+</html>
