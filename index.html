@@ -4,159 +4,196 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Nexus | Tactical AI Career Advisor</title>
+    <!-- Pointing to your original style.css -->
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- TABBED DASHBOARD OVERRIDES --- */
+        /* --- COMMAND CENTER LAYOUT FIXES --- */
         :root {
-            --dashboard-width: 1400px;
+            --dashboard-width: 1800px; /* Massive expansion for wide monitors */
+            --accent-glow: 0 0 15px rgba(100, 255, 218, 0.2);
         }
 
+        body {
+            overflow-x: hidden;
+        }
+
+        /* Expand the main container to use the whole screen */
         .app-container .container {
             max-width: var(--dashboard-width) !important;
             width: 95% !important;
             margin: 0 auto;
+            padding: 0 1rem;
         }
 
-        /* Tab Navigation */
+        /* --- TACTICAL TAB BAR --- */
         .tab-bar {
             display: flex;
-            gap: 10px;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid #1f3657;
-            padding-bottom: 10px;
+            justify-content: center;
+            gap: 5px;
+            margin: 2rem 0;
+            background: rgba(23, 42, 69, 0.5);
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid #1f3657;
         }
 
         .tab-btn {
             background: transparent;
-            border: 1px solid #1f3657;
+            border: none;
             color: var(--text-muted-color);
-            padding: 0.8rem 1.5rem;
+            padding: 1rem 2rem;
             cursor: pointer;
             font-family: var(--font-family);
-            font-weight: 600;
-            border-radius: 5px 5px 0 0;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             transition: all 0.3s ease;
+            border-radius: 4px;
+            flex: 1;
+            max-width: 300px;
         }
 
         .tab-btn.active {
-            background: var(--surface-color);
-            border-color: var(--primary-color);
-            color: var(--success-color);
-            border-bottom: 2px solid var(--success-color);
+            background: var(--primary-color);
+            color: white;
+            box-shadow: var(--accent-glow);
         }
 
+        .tab-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--success-color);
+        }
+
+        /* --- TAB CONTENT ANIMATION --- */
         .tab-content {
             display: none;
-            animation: fadeIn 0.3s ease;
+            animation: slideIn 0.4s ease-out;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 40/60 Dashboard Grid */
+        /* --- DASHBOARD GRID (40/60) --- */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 2rem;
+            gap: 2.5rem;
             align-items: start;
         }
 
-        @media (min-width: 1100px) {
+        @media (min-width: 1200px) {
             .dashboard-grid {
-                grid-template-columns: 4fr 6fr !important; 
+                grid-template-columns: 4fr 7fr !important; /* Heavily favors the roadmap width */
             }
         }
 
+        /* Sizing Fixes */
         .input-form-card, .output-plan-card {
-            min-height: 700px;
+            min-height: 750px;
             display: flex;
             flex-direction: column;
+            background-color: var(--surface-color);
+            border: 1px solid #1f3657;
+            padding: 2rem !important;
         }
 
         #chat-window {
             flex-grow: 1;
-            min-height: 450px;
+            min-height: 500px;
+            background: var(--background-color);
+            border-radius: 4px;
+            padding: 1.5rem;
+            border: 1px solid #1f3657;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .training-step {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            padding: 1.8rem;
+            border-radius: 8px;
+            margin-bottom: 2.5rem;
         }
     </style>
 </head>
 <body>
 
     <header class="navbar">
-        <div class="container">
+        <div class="container" style="max-width: var(--dashboard-width) !important;">
             <a href="#" class="logo">PROJECT NEXUS</a>
         </div>
     </header>
 
-    <section class="hero" style="padding-top: 120px; padding-bottom: 1rem;">
-        <div class="container">
-            <h1>Mission Control</h1>
-        </div>
-    </section>
-
-    <div class="app-container">
+    <!-- MAIN APP AREA -->
+    <div class="app-container" style="padding-top: 100px;">
         <div class="container">
             
-            <!-- TAB NAVIGATION -->
+            <!-- HORIZONTAL NAVIGATION TABS -->
             <div class="tab-bar">
-                <button class="tab-btn active" onclick="openTab(event, 'profile-tab')">🛡️ Step 1: Mission Profile</button>
-                <button class="tab-btn" onclick="openTab(event, 'chat-tab')">💬 Step 2: Tactical Dashboard</button>
+                <button class="tab-btn active" onclick="openTab(event, 'profile-tab')">🛡️ 1. Mission Profile</button>
+                <button class="tab-btn" onclick="openTab(event, 'chat-tab')">💬 2. Tactical Dashboard</button>
             </div>
 
-            <!-- TAB 1: MISSION PROFILE -->
+            <!-- TAB 1: MISSION PROFILE (FULL WIDTH FOCUS) -->
             <div id="profile-tab" class="tab-content active">
-                <div class="input-form-card" style="max-width: 800px; margin: 0 auto; min-height: auto;">
-                    <h2 style="color: var(--success-color); margin-bottom: 1.5rem;">Configure Personnel Metrics</h2>
-                    <p style="margin-bottom: 2rem; color: var(--text-muted-color);">Define your clearance and credentials to ground the AI's logic.</p>
+                <div class="input-form-card" style="max-width: 1000px; margin: 0 auto; min-height: auto;">
+                    <h2 style="color: var(--success-color); border-bottom: 1px solid #1f3657; padding-bottom: 1rem; margin-bottom: 2rem;">🛡️ Step 1: Establish Mission Constraints</h2>
+                    <p style="margin-bottom: 2rem; color: var(--text-muted-color);">Configure your personnel metrics. This data acts as a "hard filter" for the AI to ensure all training suggestions are accessible and relevant.</p>
                     
                     <div class="form-group">
-                        <label>Clearance Level</label>
-                        <select id="clearance" style="width: 100%; padding: 0.8rem; background: var(--background-color); color: white; border: 1px solid #2a4162; border-radius: 5px; font-family: var(--font-family);">
+                        <label>Current Clearance Level</label>
+                        <select id="clearance" style="width: 100%; padding: 1rem; background: var(--background-color); color: white; border: 1px solid #2a4162; border-radius: 5px; font-family: var(--font-family);">
                             <option value="Secret">Secret</option>
                             <option value="TS/SCI">TS/SCI</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Existing Certifications</label>
-                        <input type="text" id="certs" placeholder="e.g. Sec+, A+, Network+" value="Sec+">
+                        <label>Certifications Currently Held (Comma Separated)</label>
+                        <input type="text" id="certs" placeholder="e.g. Sec+, A+, CCNA, CEH" value="Sec+" style="padding: 1rem;">
                     </div>
 
                     <div class="form-group">
-                        <label>Local Unit Context (Optional)</label>
-                        <textarea id="local-context" style="width: 100%; padding: 0.8rem; background: var(--background-color); color: white; border: 1px solid #2a4162; border-radius: 5px; min-height: 100px;" placeholder="Paste specific unit tasks or MTP details here..."></textarea>
+                        <label>Local Unit Context (Paste SOPs or Unit Tasks)</label>
+                        <textarea id="local-context" style="width: 100%; padding: 1rem; background: var(--background-color); color: white; border: 1px solid #2a4162; border-radius: 5px; min-height: 150px; font-family: var(--font-family);" placeholder="E.g. Unit prioritizes Splunk and Zeek for DCO-H operations..."></textarea>
                     </div>
 
-                    <button class="btn btn-primary" onclick="switchTab('chat-tab')" style="width: 100%; margin-top: 1rem;">Save Profile & Proceed</button>
+                    <button class="btn btn-primary" onclick="switchTab('chat-tab')" style="width: 100%; padding: 1.2rem; margin-top: 1.5rem; font-size: 1.1rem;">SAVE PROFILE & ACTIVATE DASHBOARD</button>
                 </div>
             </div>
 
-            <!-- TAB 2: TACTICAL DASHBOARD -->
+            <!-- TAB 2: TACTICAL DASHBOARD (WIDE SIDE-BY-SIDE) -->
             <div id="chat-tab" class="tab-content">
                 <div class="dashboard-grid">
                     
+                    <!-- LEFT: Chat Window -->
                     <div class="input-form-card">
-                        <h2 style="color: var(--success-color); border-bottom: 1px solid #1f3657; padding-bottom: 10px; margin-bottom: 1.5rem;">Tactical Interface</h2>
-                        <div id="chat-window" style="overflow-y: auto; background: var(--background-color); padding: 1.2rem; border-radius: 5px; border: 1px solid #1f3657; margin-bottom: 1rem; font-size: 0.95rem; text-align: left;">
-                            <div style="color: var(--text-muted-color); font-style: italic;">Uplink Established. How can I assist your career strategy today?</div>
+                        <h2 style="color: var(--success-color); border-bottom: 1px solid #1f3657; padding-bottom: 1rem; margin-bottom: 1.5rem;">💬 Nexus Tactical Link</h2>
+                        <div id="chat-window" style="overflow-y: auto; text-align: left;">
+                            <div style="color: var(--text-muted-color); font-style: italic;">Uplink established. Provide a career goal or request a roadmap adjustment.</div>
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
-                            <input type="text" id="user-input" placeholder="e.g. 'Generate a path for DCO Operator'">
-                            <button class="btn btn-primary" id="send-btn" style="width: 100%; margin-top: 1rem;">EXECUTE COMMAND</button>
+                            <input type="text" id="user-input" placeholder="Enter objective (e.g. 'I want to be a Lead Threat Hunter')" style="padding: 1.2rem;">
+                            <button class="btn btn-primary" id="send-btn" style="width: 100%; margin-top: 1.2rem; padding: 1rem; letter-spacing: 2px;">EXECUTE COMMAND</button>
                         </div>
                     </div>
 
+                    <!-- RIGHT: Roadmap -->
                     <div class="output-plan-card" style="text-align: left;">
-                        <h2 style="color: var(--success-color); border-bottom: 1px solid #1f3657; padding-bottom: 10px; margin-bottom: 2rem;">Iterative Roadmap</h2>
+                        <h2 style="color: var(--success-color); border-bottom: 1px solid #1f3657; padding-bottom: 1rem; margin-bottom: 2rem;">📍 Training Roadmap</h2>
                         <div id="roadmap-container">
-                            <p class="placeholder-text">Engage Nexus to visualize your training path.</p>
+                            <div style="text-align: center; margin-top: 6rem;">
+                                <p class="placeholder-text" style="font-size: 1.2rem;">Enter mission parameters to visualize your path.</p>
+                            </div>
                         </div>
                     </div>
 
@@ -167,8 +204,8 @@
     </div>
 
     <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 Project Nexus | Secure Mission Readiness</p>
+        <div class="container" style="max-width: var(--dashboard-width) !important;">
+            <p>&copy; 2024 Project Nexus | Secure AI Mission Support</p>
         </div>
     </footer>
 
@@ -205,7 +242,7 @@
 
             const userText = userInput.value;
             chatHistory.push({ role: 'user', content: userText });
-            chatWindow.innerHTML += `<div style="margin-bottom: 15px; color: var(--success-color); font-weight: 600;">> USER: ${userText}</div>`;
+            chatWindow.innerHTML += `<div style="margin-bottom: 1.5rem; color: var(--success-color); font-weight: 600;">> USER: ${userText}</div>`;
             userInput.value = '';
             chatWindow.scrollTop = chatWindow.scrollHeight;
 
@@ -213,10 +250,8 @@
             sendBtn.disabled = true;
 
             try {
-                // REMINDER: YOU MUST REPLACE THIS WITH YOUR RENDER URL
-                const targetUrl = 'https://nexus-back-end-3eom.onrender.com/';
-                
-                const response = await fetch(targetUrl, {
+                // UPDATED WITH NEW RENDER URL
+                const response = await fetch('https://nexus-back-end-3eom.onrender.com/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ chatHistory: chatHistory, missionProfile: profile })
@@ -230,28 +265,34 @@
 
                 if (data.assistant_message) {
                     chatHistory.push({ role: 'assistant', content: data.assistant_message });
-                    chatWindow.innerHTML += `<div style="margin-bottom: 15px; border-left: 3px solid var(--primary-color); padding-left: 12px; line-height: 1.4;"><strong>> NEXUS:</strong> ${data.assistant_message}</div>`;
+                    chatWindow.innerHTML += `<div style="margin-bottom: 1.5rem; border-left: 3px solid var(--primary-color); padding-left: 15px; line-height: 1.5;"><strong>> NEXUS:</strong> ${data.assistant_message}</div>`;
                 }
 
                 if (data.learning_path && data.learning_path.length > 0) {
                     let roadmapHtml = '';
                     data.learning_path.forEach(step => {
-                        roadmapHtml += `<div class="training-step" data-step="${step.step_number}"><h3>${step.title}</h3><p>${step.justification}</p><div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 4px; border-left: 3px solid var(--success-color); font-size: 0.85rem;"><strong style="color: var(--success-color);">Access:</strong> ${step.access_instructions}</div>${step.platform_url ? `<a href="${step.platform_url}" target="_blank" style="margin-top: 15px; display: inline-block;">Launch ↗</a>` : ''}</div>`;
+                        roadmapHtml += `
+                            <div class="training-step" data-step="${step.step_number}">
+                                <h3 style="margin-bottom: 10px;">${step.title}</h3>
+                                <p style="font-size: 1rem; margin-bottom: 15px;">${step.justification}</p>
+                                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 4px; border-left: 4px solid var(--success-color); font-size: 0.9rem;">
+                                    <strong style="color: var(--success-color); text-transform: uppercase;">Access Instructions:</strong><br>${step.access_instructions}
+                                </div>
+                                ${step.platform_url ? `<a href="${step.platform_url}" target="_blank" style="display: inline-block; margin-top: 15px; font-weight: bold;">Launch Resource ↗</a>` : ''}
+                            </div>
+                        `;
                     });
                     roadmapContainer.innerHTML = roadmapHtml;
                 }
                 chatWindow.scrollTop = chatWindow.scrollHeight;
-                
             } catch (error) {
                 console.error("Full Error Object:", error);
-                
-                // Detailed Diagnostic Error UI
                 let errorType = error.name === 'TypeError' ? "Network/CORS/Timeout Error" : "Server Error";
                 chatWindow.innerHTML += `
                     <div style="color: #ff6464; margin-top: 15px; border: 1px solid #ff6464; padding: 12px; border-radius: 5px; background: rgba(255, 100, 100, 0.05);">
                         <strong>! UPLINK FAILURE:</strong> ${errorType}<br>
                         <span style="font-size: 0.85rem; display: block; margin-top: 5px;">Details: ${error.message}</span>
-                        <span style="font-size: 0.8rem; color: #8892b0; display: block; margin-top: 8px;">Diagnostic Check: Ensure your Render URL in index.html is correct and the server is awake.</span>
+                        <span style="font-size: 0.8rem; color: #8892b0; display: block; margin-top: 8px;">Diagnostic Check: Ensure your Render URL is awake and accepting connections.</span>
                     </div>`;
                 chatWindow.scrollTop = chatWindow.scrollHeight;
             } finally {
